@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { CreateTodoSchema, UpdateTodoSchema, CreateTodoFormData } from '../schemas/todoSchema';
 import { Todo } from '../types/todo';
 
@@ -77,8 +78,8 @@ export function TodoFormModal({ isOpen, onClose, onSubmit, todo, title }: TodoFo
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-60 flex items-center justify-center z-max p-4">
+  const modalContent = (
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4" style={{zIndex: 999999, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0}}>
       <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">{title}</h2>
@@ -130,4 +131,6 @@ export function TodoFormModal({ isOpen, onClose, onSubmit, todo, title }: TodoFo
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }

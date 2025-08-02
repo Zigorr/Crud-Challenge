@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Todo } from '../types/todo';
 
 interface DeleteConfirmModalProps {
@@ -23,8 +24,8 @@ export function DeleteConfirmModal({ isOpen, todo, onConfirm, onCancel }: Delete
 
   if (!isOpen || !todo) return null;
 
-  return (
-    <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  const modalContent = (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" style={{zIndex: 999999, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0}}>
       <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
         <div className="text-center">
           {/* Delete icon */}
@@ -65,4 +66,6 @@ export function DeleteConfirmModal({ isOpen, todo, onConfirm, onCancel }: Delete
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
