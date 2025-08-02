@@ -1,0 +1,94 @@
+import { useState } from 'react';
+import { Todo } from '../types/todo';
+import { TodoItem } from './TodoItem';
+import { TodoFormModal } from './TodoFormModal';
+import { useTodos } from '../hooks/useTodos';
+import { CreateTodoFormData } from '../schemas/todoSchema';
+
+export function TodoList() {
+  const { todos, loading, error, createTodo, updateTodo, deleteTodo } = useTodos();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTodo, setEditingTodo] = useState<Todo | undefined>();
+
+  const handleCreateTodo = () => {
+    setEditingTodo(undefined);
+    setIsModalOpen(true);
+  };
+
+  const handleEditTodo = (todo: Todo) => {
+    setEditingTodo(todo);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = async (data: CreateTodoFormData & { id?: string }) => {
+    if (data.id) {
+      await updateTodo({ id: data.id, title: data.title, status: data.status });
+    } else {
+      await createTodo({ title: data.title, status: data.status });
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingTodo(undefined);
+  };
+
+  if (loading && todos.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-gray-500">Loading todos...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-gray-900">My Todos</h1>
+        <button
+          onClick={handleCreateTodo}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          Add Todo
+        </button>
+      </div>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
+          {error}
+        </div>
+      )}
+
+      {todos.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="text-gray-500 mb-4">No todos yet</div>
+          <button
+            onClick={handleCreateTodo}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Create your first todo
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {todos.map((todo) => (
+            <TodoItem
+              key={todo.id}
+              todo={todo}
+              onEdit={handleEditTodo}
+              onDelete={deleteTodo}
+            />
+          ))}
+        </div>
+      )}
+
+      <TodoFormModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSubmit={handleSubmit}
+        todo={editingTodo}
+        title={editingTodo ? 'Edit Todo' : 'Create Todo'}
+      />
+    </div>
+  );
+}
