@@ -34,7 +34,7 @@ export function useAuth() {
       if (error) throw error;
       return { success: true, error: null };
     } catch (error) {
-      console.error('Error signing up:', error);
+      // Error is already handled by setting the error state
       return { success: false, error: error instanceof Error ? error.message : 'An error occurred' };
     } finally {
       setLoading(false);
@@ -51,7 +51,7 @@ export function useAuth() {
       if (error) throw error;
       return { success: true, error: null };
     } catch (error) {
-      console.error('Error signing in:', error);
+      // Error is already handled by setting the error state
       return { success: false, error: error instanceof Error ? error.message : 'An error occurred' };
     } finally {
       setLoading(false);
@@ -64,7 +64,7 @@ export function useAuth() {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
     } catch (error) {
-      console.error('Error signing out:', error);
+      // Error is already handled by setting the error state
     } finally {
       setLoading(false);
     }

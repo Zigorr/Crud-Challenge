@@ -1,15 +1,27 @@
-# TODO List Application
+# TODO List & Checklist Application
 
-A modern, full-stack TODO list application built with React, TypeScript, Tailwind CSS, and Supabase. Features user isolation, real-time data persistence, and a clean, responsive interface.
+A modern, full-stack productivity application built with React, TypeScript, Tailwind CSS, and Supabase. Features both todo management and checklist functionality with user isolation, real-time data persistence, and a clean, responsive interface.
 
 ## Features
 
+### Todo Management
 - **Full CRUD Operations**: Create, read, update, and delete todos
-- **User Isolation**: Each user session has isolated todo data
+- **Task Completion**: Mark todos as complete/incomplete
+- **User Isolation**: Each user has their own private todo list
+
+### Checklist System
+- **Item Management**: Add items with quantities (e.g., "2 kg", "3 bottles")
+- **Category Organization**: Auto-categorize items (groceries, shopping, etc.)
+- **Smart Categories**: Dropdown with existing categories + ability to create new ones
+- **Flexible Quantities**: String-based quantities for natural input
+- **Notes Support**: Add additional details to checklist items
+
+### General Features
 - **Real-time Persistence**: Data stored in Supabase database
-- **Unified Modal**: Single reusable modal for both create and edit operations
+- **Unified Modals**: Reusable modals for create and edit operations
 - **Form Validation**: Zod-based validation with user-friendly error messages
-- **Responsive Design**: Clean, modern interface built with Tailwind CSS
+- **Responsive Design**: Mobile-first design with bottom navigation
+- **Tab Navigation**: Easy switching between todos and checklists
 - **TypeScript**: Full type safety throughout the application
 
 ## Tech Stack
@@ -24,23 +36,32 @@ A modern, full-stack TODO list application built with React, TypeScript, Tailwin
 
 ```
 src/
-├── components/          # React components
-│   ├── Auth.tsx        # Authentication component
-│   ├── TodoFormModal.tsx  # Unified create/edit modal
-│   ├── TodoItem.tsx    # Individual todo item
-│   └── TodoList.tsx    # Main todo list component
-├── hooks/              # Custom React hooks
-│   ├── useAuth.ts      # Authentication hook
-│   └── useTodos.ts     # Todo CRUD operations hook
-├── lib/                # External service configurations
-│   └── supabase.ts     # Supabase client setup
-├── schemas/            # Zod validation schemas
-│   └── todoSchema.ts   # Todo form validation
-├── types/              # TypeScript type definitions
-│   └── todo.ts         # Todo-related types
-├── App.tsx             # Main application component
-├── main.tsx            # Application entry point
-└── index.css           # Global styles with Tailwind
+├── components/              # React components
+│   ├── Auth.tsx            # Authentication component
+│   ├── AuthForm.tsx        # Login/signup form
+│   ├── TodoFormModal.tsx   # Todo create/edit modal
+│   ├── TodoItem.tsx        # Individual todo item
+│   ├── TodoList.tsx        # Main todo list component
+│   ├── ChecklistList.tsx   # Main checklist component
+│   ├── ChecklistItemFormModal.tsx  # Checklist item modal
+│   ├── ChecklistItemRow.tsx        # Individual checklist item
+│   ├── CategoryFilter.tsx          # Category filtering
+│   └── DeleteConfirmModal.tsx      # Deletion confirmation
+├── hooks/                   # Custom React hooks
+│   ├── useAuth.ts          # Authentication hook
+│   ├── useTodos.ts         # Todo CRUD operations
+│   └── useChecklists.ts    # Checklist CRUD operations
+├── lib/                    # External service configurations
+│   └── supabase.ts         # Supabase client setup
+├── schemas/                # Zod validation schemas
+│   ├── todoSchema.ts       # Todo form validation
+│   └── checklistSchema.ts  # Checklist form validation
+├── types/                  # TypeScript type definitions
+│   ├── todo.ts            # Todo-related types
+│   └── checklist.ts       # Checklist-related types
+├── App.tsx                 # Main application component
+├── main.tsx               # Application entry point
+└── index.css              # Global styles with Tailwind
 ```
 
 ## Data Model
@@ -48,10 +69,21 @@ src/
 ### Todo Entity
 - `id`: Unique identifier (string)
 - `title`: Todo description (string, required)
-- `status`: Current status (enum: "To Do", "In Progress", "Completed")
-- `user_id`: User identifier for isolation (string)
-- `created_at`: Creation timestamp (string)
-- `updated_at`: Last update timestamp (string)
+- `completed`: Completion status (boolean)
+- `user_id`: User who owns this todo (string)
+- `created_at`: Creation timestamp
+- `updated_at`: Last modification timestamp
+
+### Checklist Item Entity
+- `id`: Unique identifier (string)
+- `title`: Item name (string, required)
+- `quantity`: Flexible quantity string (e.g., "2 kg", "3 bottles")
+- `category`: Item category (string, user-defined)
+- `completed`: Completion status (boolean)
+- `notes`: Additional notes (string, optional)
+- `user_id`: User who owns this item (string)
+- `created_at`: Creation timestamp
+- `updated_at`: Last modification timestamp
 
 ## Setup Instructions
 
