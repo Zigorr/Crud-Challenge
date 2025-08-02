@@ -162,7 +162,7 @@ export function ChecklistList() {
 
       <DeleteConfirmModal
         isOpen={isDeleteModalOpen}
-        todo={itemToDelete ? { id: itemToDelete.id, title: itemToDelete.title } : null}
+        item={itemToDelete ? { id: itemToDelete.id, title: itemToDelete.title } : null}
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
       />

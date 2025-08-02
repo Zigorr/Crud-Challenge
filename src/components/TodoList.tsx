@@ -114,7 +114,7 @@ export function TodoList() {
 
       <DeleteConfirmModal
         isOpen={isDeleteModalOpen}
-        todo={todoToDelete}
+        item={todoToDelete}
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
       />

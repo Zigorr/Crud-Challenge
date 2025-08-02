@@ -1,15 +1,14 @@
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Todo } from '../types/todo';
 
 interface DeleteConfirmModalProps {
   isOpen: boolean;
-  todo: Todo | null;
+  item: { id: string; title: string } | null;
   onConfirm: () => void;
   onCancel: () => void;
 }
 
-export function DeleteConfirmModal({ isOpen, todo, onConfirm, onCancel }: DeleteConfirmModalProps) {
+export function DeleteConfirmModal({ isOpen, item, onConfirm, onCancel }: DeleteConfirmModalProps) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -22,7 +21,7 @@ export function DeleteConfirmModal({ isOpen, todo, onConfirm, onCancel }: Delete
     };
   }, [isOpen]);
 
-  if (!isOpen || !todo) return null;
+  if (!isOpen || !item) return null;
 
   const modalContent = (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" style={{zIndex: 999999, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0}}>
@@ -36,13 +35,13 @@ export function DeleteConfirmModal({ isOpen, todo, onConfirm, onCancel }: Delete
           </div>
           
           {/* Title */}
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Delete Todo</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Delete Item</h3>
           
           {/* Message */}
           <div className="mb-6">
-            <p className="text-sm text-gray-500 mb-2">Are you sure you want to delete this todo?</p>
+            <p className="text-sm text-gray-500 mb-2">Are you sure you want to delete this item?</p>
             <p className="text-sm font-medium text-gray-900 bg-gray-50 rounded-md p-2 break-words">
-              "{todo.title}"
+              "{item.title}"
             </p>
             <p className="text-xs text-gray-400 mt-2">This action cannot be undone.</p>
           </div>
