@@ -1,7 +1,7 @@
 export interface Todo {
   id: string;
   title: string;
-  status: 'To Do' | 'In Progress' | 'Completed';
+  completed: boolean;
   user_id: string;
   created_at: string;
   updated_at: string;
@@ -9,9 +9,9 @@ export interface Todo {
 
 export interface CreateTodoInput {
   title: string;
-  status: 'To Do' | 'In Progress' | 'Completed';
 }
 
-export interface UpdateTodoInput extends CreateTodoInput {
+export interface UpdateTodoInput {
   id: string;
+  title: string;
 }

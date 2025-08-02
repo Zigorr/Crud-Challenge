@@ -4,44 +4,47 @@ import { Todo } from '../types/todo';
 interface TodoItemProps {
   todo: Todo;
   onEdit: (todo: Todo) => void;
-  onDelete: (id: string) => void;
+  onDelete: (todo: Todo) => void;
+  onToggleComplete: (id: string) => void;
 }
 
-const statusColors = {
-  'To Do': 'bg-gray-100 text-gray-800',
-  'In Progress': 'bg-yellow-100 text-yellow-800',
-  'Completed': 'bg-green-100 text-green-800',
-};
-
-export function TodoItem({ todo, onEdit, onDelete }: TodoItemProps) {
+export function TodoItem({ todo, onEdit, onDelete, onToggleComplete }: TodoItemProps) {
   const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this todo?')) {
-      onDelete(todo.id);
-    }
+    onDelete(todo);
   };
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between">
+      <div className="flex items-center gap-3">
+        {/* Clickable completion circle */}
+        <button
+          onClick={() => onToggleComplete(todo.id)}
+          className="flex-shrink-0 w-6 h-6 rounded-full border-2 border-gray-300 hover:border-blue-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          title={todo.completed ? 'Mark as incomplete' : 'Mark as complete'}
+        >
+          {todo.completed && (
+            <div className="w-full h-full rounded-full bg-green-500 flex items-center justify-center">
+              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+            </div>
+          )}
+        </button>
+
+        {/* Todo content */}
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-medium text-gray-900 break-words">
+          <h3 className={`text-lg font-medium break-words ${
+            todo.completed ? 'text-gray-500 line-through' : 'text-gray-900'
+          }`}>
             {todo.title}
           </h3>
-          <div className="mt-2 flex items-center">
-            <span
-              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                statusColors[todo.status]
-              }`}
-            >
-              {todo.status}
-            </span>
-            <span className="ml-3 text-sm text-gray-500">
-              Created: {new Date(todo.created_at).toLocaleDateString()}
-            </span>
-          </div>
+          <p className="text-sm text-gray-500 mt-1">
+            Created: {new Date(todo.created_at).toLocaleDateString()}
+          </p>
         </div>
         
-        <div className="flex items-center gap-2 ml-4">
+        {/* Action buttons */}
+        <div className="flex items-center gap-2">
           <button
             onClick={() => onEdit(todo)}
             className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-colors"

@@ -44,7 +44,7 @@ export function useTodos() {
         .insert([
           {
             title: input.title,
-            status: input.status,
+            completed: false,
             user_id: user.id,
           },
         ])
@@ -74,7 +74,6 @@ export function useTodos() {
         .from('todos')
         .update({
           title: input.title,
-          status: input.status,
           updated_at: new Date().toISOString(),
         })
         .eq('id', input.id)
@@ -86,6 +85,42 @@ export function useTodos() {
 
       setTodos(prev =>
         prev.map(todo => (todo.id === input.id ? data : todo))
+      );
+      return data;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleTodoComplete = async (id: string) => {
+    if (!user) throw new Error('User not authenticated');
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Find the current todo to get its current completed status
+      const currentTodo = todos.find(todo => todo.id === id);
+      if (!currentTodo) throw new Error('Todo not found');
+
+      const { data, error } = await supabase
+        .from('todos')
+        .update({
+          completed: !currentTodo.completed,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setTodos(prev =>
+        prev.map(todo => (todo.id === id ? data : todo))
       );
       return data;
     } catch (err) {
@@ -130,6 +165,7 @@ export function useTodos() {
     error,
     createTodo,
     updateTodo,
+    toggleTodoComplete,
     deleteTodo,
     refetch: fetchTodos,
   };

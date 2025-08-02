@@ -13,7 +13,6 @@ interface TodoFormModalProps {
 export function TodoFormModal({ isOpen, onClose, onSubmit, todo, title }: TodoFormModalProps) {
   const [formData, setFormData] = useState<CreateTodoFormData>({
     title: '',
-    status: 'To Do',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -22,16 +21,26 @@ export function TodoFormModal({ isOpen, onClose, onSubmit, todo, title }: TodoFo
     if (todo) {
       setFormData({
         title: todo.title,
-        status: todo.status,
       });
     } else {
       setFormData({
         title: '',
-        status: 'To Do',
       });
     }
     setErrors({});
   }, [todo, isOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,18 +68,18 @@ export function TodoFormModal({ isOpen, onClose, onSubmit, todo, title }: TodoFo
     }
   };
 
-  const handleChange = (field: keyof CreateTodoFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+  const handleChange = (value: string) => {
+    setFormData({ title: value });
+    if (errors.title) {
+      setErrors({});
     }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+    <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-60 flex items-center justify-center z-max p-4">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">{title}</h2>
           <button
@@ -85,38 +94,20 @@ export function TodoFormModal({ isOpen, onClose, onSubmit, todo, title }: TodoFo
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-              Title
+              Task Title
             </label>
             <input
               type="text"
               id="title"
               value={formData.title}
-              onChange={(e) => handleChange('title', e.target.value)}
+              onChange={(e) => handleChange(e.target.value)}
               className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.title ? 'border-red-500' : 'border-gray-300'
               }`}
-              placeholder="Enter todo title"
+              placeholder="What needs to be done?"
+              autoFocus
             />
             {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
-          </div>
-
-          <div>
-            <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-              Status
-            </label>
-            <select
-              id="status"
-              value={formData.status}
-              onChange={(e) => handleChange('status', e.target.value as any)}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.status ? 'border-red-500' : 'border-gray-300'
-              }`}
-            >
-              <option value="To Do">To Do</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
-            </select>
-            {errors.status && <p className="text-red-500 text-sm mt-1">{errors.status}</p>}
           </div>
 
           <div className="flex gap-3 pt-4">

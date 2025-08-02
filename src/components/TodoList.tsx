@@ -2,13 +2,16 @@ import { useState } from 'react';
 import { Todo } from '../types/todo';
 import { TodoItem } from './TodoItem';
 import { TodoFormModal } from './TodoFormModal';
+import { DeleteConfirmModal } from './DeleteConfirmModal';
 import { useTodos } from '../hooks/useTodos';
 import { CreateTodoFormData } from '../schemas/todoSchema';
 
 export function TodoList() {
-  const { todos, loading, error, createTodo, updateTodo, deleteTodo } = useTodos();
+  const { todos, loading, error, createTodo, updateTodo, toggleTodoComplete, deleteTodo } = useTodos();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTodo, setEditingTodo] = useState<Todo | undefined>();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [todoToDelete, setTodoToDelete] = useState<Todo | null>(null);
 
   const handleCreateTodo = () => {
     setEditingTodo(undefined);
@@ -22,15 +25,33 @@ export function TodoList() {
 
   const handleSubmit = async (data: CreateTodoFormData & { id?: string }) => {
     if (data.id) {
-      await updateTodo({ id: data.id, title: data.title, status: data.status });
+      await updateTodo({ id: data.id, title: data.title });
     } else {
-      await createTodo({ title: data.title, status: data.status });
+      await createTodo({ title: data.title });
     }
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingTodo(undefined);
+  };
+
+  const handleDeleteClick = (todo: Todo) => {
+    setTodoToDelete(todo);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (todoToDelete) {
+      await deleteTodo(todoToDelete.id);
+      setIsDeleteModalOpen(false);
+      setTodoToDelete(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setTodoToDelete(null);
   };
 
   if (loading && todos.length === 0) {
@@ -76,7 +97,8 @@ export function TodoList() {
               key={todo.id}
               todo={todo}
               onEdit={handleEditTodo}
-              onDelete={deleteTodo}
+              onDelete={handleDeleteClick}
+              onToggleComplete={toggleTodoComplete}
             />
           ))}
         </div>
@@ -88,6 +110,13 @@ export function TodoList() {
         onSubmit={handleSubmit}
         todo={editingTodo}
         title={editingTodo ? 'Edit Todo' : 'Create Todo'}
+      />
+
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        todo={todoToDelete}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
       />
     </div>
   );
