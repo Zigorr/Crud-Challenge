@@ -139,15 +139,54 @@ export function ChecklistList() {
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredItems.map((item) => (
-            <ChecklistItemRow
-              key={item.id}
-              item={item}
-              onEdit={handleEditItem}
-              onDelete={handleDeleteClick}
-              onToggleComplete={toggleChecklistItemComplete}
-            />
-          ))}
+          {(() => {
+            // Sort filtered items: incomplete first, then completed
+            const sortedItems = [...filteredItems].sort((a, b) => {
+              if (a.completed !== b.completed) {
+                return a.completed ? 1 : -1; // incomplete first
+              }
+              // Within each group, sort by creation date (newest first for incomplete, oldest first for completed)
+              const dateA = new Date(a.created_at).getTime();
+              const dateB = new Date(b.created_at).getTime();
+              return a.completed ? dateA - dateB : dateB - dateA;
+            });
+
+            const incompleteItems = sortedItems.filter(item => !item.completed);
+            const completedItems = sortedItems.filter(item => item.completed);
+
+            return (
+              <>
+                {/* Incomplete items */}
+                {incompleteItems.map((item) => (
+                  <ChecklistItemRow
+                    key={item.id}
+                    item={item}
+                    onEdit={handleEditItem}
+                    onDelete={handleDeleteClick}
+                    onToggleComplete={toggleChecklistItemComplete}
+                  />
+                ))}
+
+                {/* Separator if both incomplete and completed items exist */}
+                {incompleteItems.length > 0 && completedItems.length > 0 && (
+                  <div className="border-t border-gray-200 my-6 pt-4">
+                    <span className="text-sm text-gray-500 font-medium">Completed Items</span>
+                  </div>
+                )}
+
+                {/* Completed items */}
+                {completedItems.map((item) => (
+                  <ChecklistItemRow
+                    key={item.id}
+                    item={item}
+                    onEdit={handleEditItem}
+                    onDelete={handleDeleteClick}
+                    onToggleComplete={toggleChecklistItemComplete}
+                  />
+                ))}
+              </>
+            );
+          })()}
         </div>
       )}
 

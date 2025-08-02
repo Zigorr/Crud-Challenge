@@ -92,15 +92,54 @@ export function TodoList() {
         </div>
       ) : (
         <div className="space-y-4">
-          {todos.map((todo) => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              onEdit={handleEditTodo}
-              onDelete={handleDeleteClick}
-              onToggleComplete={toggleTodoComplete}
-            />
-          ))}
+          {(() => {
+            // Sort todos: incomplete first, then completed
+            const sortedTodos = [...todos].sort((a, b) => {
+              if (a.completed !== b.completed) {
+                return a.completed ? 1 : -1; // incomplete first
+              }
+              // Within each group, sort by creation date (newest first for incomplete, oldest first for completed)
+              const dateA = new Date(a.created_at).getTime();
+              const dateB = new Date(b.created_at).getTime();
+              return a.completed ? dateA - dateB : dateB - dateA;
+            });
+
+            const incompleteTodos = sortedTodos.filter(todo => !todo.completed);
+            const completedTodos = sortedTodos.filter(todo => todo.completed);
+
+            return (
+              <>
+                {/* Incomplete todos */}
+                {incompleteTodos.map((todo) => (
+                  <TodoItem
+                    key={todo.id}
+                    todo={todo}
+                    onEdit={handleEditTodo}
+                    onDelete={handleDeleteClick}
+                    onToggleComplete={toggleTodoComplete}
+                  />
+                ))}
+
+                {/* Separator if both incomplete and completed todos exist */}
+                {incompleteTodos.length > 0 && completedTodos.length > 0 && (
+                  <div className="border-t border-gray-200 my-6 pt-4">
+                    <span className="text-sm text-gray-500 font-medium">Completed Tasks</span>
+                  </div>
+                )}
+
+                {/* Completed todos */}
+                {completedTodos.map((todo) => (
+                  <TodoItem
+                    key={todo.id}
+                    todo={todo}
+                    onEdit={handleEditTodo}
+                    onDelete={handleDeleteClick}
+                    onToggleComplete={toggleTodoComplete}
+                  />
+                ))}
+              </>
+            );
+          })()}
         </div>
       )}
 
