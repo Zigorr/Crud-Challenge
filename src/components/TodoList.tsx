@@ -3,6 +3,7 @@ import { Todo } from '../types/todo';
 import { Category } from '../types/category';
 import { TodoItem } from './TodoItem';
 import { TodoFormModal } from './TodoFormModal';
+import { CategoryFormModal } from './CategoryFormModal';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
 import { useTodos } from '../hooks/useTodos';
 import { useCategories } from '../hooks/useCategories';
@@ -348,6 +349,7 @@ export function TodoList() {
   const { isDark } = useTheme();
   
   const [isTodoModalOpen, setIsTodoModalOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [editingTodo, setEditingTodo] = useState<Todo | undefined>();
   const [editingCategory, setEditingCategory] = useState<Category | undefined>();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -381,7 +383,7 @@ export function TodoList() {
   
   const handleEditCategory = (category: Category) => {
     setEditingCategory(category);
-    // Note: Category editing is now handled through the todo form
+    setIsCategoryModalOpen(true);
   };
 
   const handleSubmitTodo = async (data: CreateTodoFormData & { id?: string }) => {
@@ -403,6 +405,11 @@ export function TodoList() {
   const handleCloseTodoModal = () => {
     setIsTodoModalOpen(false);
     setEditingTodo(undefined);
+  };
+
+  const handleCloseCategoryModal = () => {
+    setIsCategoryModalOpen(false);
+    setEditingCategory(undefined);
   };
 
 
@@ -563,6 +570,14 @@ export function TodoList() {
         todo={editingTodo}
         title={editingTodo ? 'Edit Todo' : 'Create Todo'}
         categories={categories}
+      />
+
+      <CategoryFormModal
+        isOpen={isCategoryModalOpen}
+        onClose={handleCloseCategoryModal}
+        onSubmit={handleSubmitCategory}
+        category={editingCategory}
+        title={editingCategory ? 'Edit Category' : 'Create Category'}
       />
 
       <DeleteConfirmModal
