@@ -1,5 +1,6 @@
 
 import { Todo } from '../types/todo';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface TodoItemProps {
   todo: Todo;
@@ -9,17 +10,27 @@ interface TodoItemProps {
 }
 
 export function TodoItem({ todo, onEdit, onDelete, onToggleComplete }: TodoItemProps) {
+  const { isDark } = useTheme();
+  
   const handleDelete = () => {
     onDelete(todo);
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow">
+    <div className={`rounded-lg border p-4 shadow-sm hover:shadow-md transition-all duration-300 ${
+      isDark 
+        ? 'bg-gray-800 border-gray-700 hover:shadow-lg hover:shadow-gray-900/50' 
+        : 'bg-white border-gray-200 hover:shadow-md'
+    }`}>
       <div className="flex items-center gap-3">
         {/* Clickable completion circle */}
         <button
           onClick={() => onToggleComplete(todo.id)}
-          className="flex-shrink-0 w-6 h-6 rounded-full border-2 border-gray-300 hover:border-blue-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className={`flex-shrink-0 w-6 h-6 rounded-full border-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+            isDark 
+              ? 'border-gray-600 hover:border-blue-400 focus:ring-offset-gray-800' 
+              : 'border-gray-300 hover:border-blue-500 focus:ring-offset-white'
+          }`}
           title={todo.completed ? 'Mark as incomplete' : 'Mark as complete'}
         >
           {todo.completed && (
@@ -33,12 +44,16 @@ export function TodoItem({ todo, onEdit, onDelete, onToggleComplete }: TodoItemP
 
         {/* Todo content */}
         <div className="flex-1 min-w-0">
-          <h3 className={`text-lg font-medium break-words ${
-            todo.completed ? 'text-gray-500 line-through' : 'text-gray-900'
+          <h3 className={`text-lg font-medium break-words transition-colors duration-300 ${
+            todo.completed 
+              ? isDark ? 'text-gray-500 line-through' : 'text-gray-500 line-through'
+              : isDark ? 'text-white' : 'text-gray-900'
           }`}>
             {todo.title}
           </h3>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className={`text-sm mt-1 transition-colors duration-300 ${
+            isDark ? 'text-gray-400' : 'text-gray-500'
+          }`}>
             Created: {new Date(todo.created_at).toLocaleDateString()}
           </p>
         </div>
@@ -47,7 +62,11 @@ export function TodoItem({ todo, onEdit, onDelete, onToggleComplete }: TodoItemP
         <div className="flex items-center gap-2">
           <button
             onClick={() => onEdit(todo)}
-            className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-colors"
+            className={`p-2 rounded-md transition-colors ${
+              isDark 
+                ? 'text-blue-400 hover:text-blue-300 hover:bg-blue-900/30' 
+                : 'text-blue-600 hover:text-blue-800 hover:bg-blue-50'
+            }`}
             title="Edit todo"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,7 +75,11 @@ export function TodoItem({ todo, onEdit, onDelete, onToggleComplete }: TodoItemP
           </button>
           <button
             onClick={handleDelete}
-            className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
+            className={`p-2 rounded-md transition-colors ${
+              isDark 
+                ? 'text-red-400 hover:text-red-300 hover:bg-red-900/30' 
+                : 'text-red-600 hover:text-red-800 hover:bg-red-50'
+            }`}
             title="Delete todo"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

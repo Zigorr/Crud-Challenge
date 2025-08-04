@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Todo, CreateTodoInput, UpdateTodoInput } from '../types/todo';
+import { Category, CreateCategoryInput, UpdateCategoryInput } from '../types/category';
 import { useAuth } from './useAuth';
 
-export function useTodos() {
-  const [todos, setTodos] = useState<Todo[]>([]);
+export function useCategories() {
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
-  const fetchTodos = async () => {
+  const fetchCategories = async () => {
     if (!user) return;
 
     try {
@@ -17,14 +17,14 @@ export function useTodos() {
       setError(null);
 
       const { data, error } = await supabase
-        .from('todos')
+        .from('categories')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
 
-      setTodos(data || []);
+      setCategories(data || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -32,7 +32,7 @@ export function useTodos() {
     }
   };
 
-  const createTodo = async (input: CreateTodoInput) => {
+  const createCategory = async (input: CreateCategoryInput) => {
     if (!user) throw new Error('User not authenticated');
 
     try {
@@ -40,13 +40,13 @@ export function useTodos() {
       setError(null);
 
       const { data, error } = await supabase
-        .from('todos')
+        .from('categories')
         .insert([
           {
-            title: input.title,
-            completed: false,
+            name: input.name,
+            color: input.color,
+            icon: input.icon,
             user_id: user.id,
-            category_id: input.category_id || null,
           },
         ])
         .select()
@@ -54,7 +54,7 @@ export function useTodos() {
 
       if (error) throw error;
 
-      setTodos(prev => [...prev, data]);
+      setCategories(prev => [...prev, data]);
       return data;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -64,7 +64,7 @@ export function useTodos() {
     }
   };
 
-  const updateTodo = async (input: UpdateTodoInput) => {
+  const updateCategory = async (input: UpdateCategoryInput) => {
     if (!user) throw new Error('User not authenticated');
 
     try {
@@ -72,10 +72,11 @@ export function useTodos() {
       setError(null);
 
       const { data, error } = await supabase
-        .from('todos')
+        .from('categories')
         .update({
-          title: input.title,
-          category_id: input.category_id || null,
+          name: input.name,
+          color: input.color,
+          icon: input.icon,
           updated_at: new Date().toISOString(),
         })
         .eq('id', input.id)
@@ -85,8 +86,8 @@ export function useTodos() {
 
       if (error) throw error;
 
-      setTodos(prev =>
-        prev.map(todo => (todo.id === input.id ? data : todo))
+      setCategories(prev =>
+        prev.map(category => (category.id === input.id ? data : category))
       );
       return data;
     } catch (err) {
@@ -97,43 +98,7 @@ export function useTodos() {
     }
   };
 
-  const toggleTodoComplete = async (id: string) => {
-    if (!user) throw new Error('User not authenticated');
-
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Find the current todo to get its current completed status
-      const currentTodo = todos.find(todo => todo.id === id);
-      if (!currentTodo) throw new Error('Todo not found');
-
-      const { data, error } = await supabase
-        .from('todos')
-        .update({
-          completed: !currentTodo.completed,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', id)
-        .eq('user_id', user.id)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      setTodos(prev =>
-        prev.map(todo => (todo.id === id ? data : todo))
-      );
-      return data;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const deleteTodo = async (id: string) => {
+  const deleteCategory = async (id: string) => {
     if (!user) throw new Error('User not authenticated');
 
     try {
@@ -141,14 +106,14 @@ export function useTodos() {
       setError(null);
 
       const { error } = await supabase
-        .from('todos')
+        .from('categories')
         .delete()
         .eq('id', id)
         .eq('user_id', user.id);
 
       if (error) throw error;
 
-      setTodos(prev => prev.filter(todo => todo.id !== id));
+      setCategories(prev => prev.filter(category => category.id !== id));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
       throw err;
@@ -158,17 +123,16 @@ export function useTodos() {
   };
 
   useEffect(() => {
-    fetchTodos();
+    fetchCategories();
   }, [user]);
 
   return {
-    todos,
+    categories,
     loading,
     error,
-    createTodo,
-    updateTodo,
-    toggleTodoComplete,
-    deleteTodo,
-    refetch: fetchTodos,
+    createCategory,
+    updateCategory,
+    deleteCategory,
+    refetch: fetchCategories,
   };
 }

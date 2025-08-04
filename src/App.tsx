@@ -1,20 +1,29 @@
-
 import { useState } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { Auth } from './components/Auth';
 import { TodoList } from './components/TodoList';
 import { ChecklistList } from './components/ChecklistList';
+import { CheckItLogo } from './components/CheckItLogo';
+import { ThemeToggle } from './components/ThemeToggle';
+import { useTheme } from './contexts/ThemeContext';
 
 type AppView = 'todos' | 'checklists';
 
 function App() {
   const { user, loading, signOut } = useAuth();
+  const { isDark } = useTheme();
   const [currentView, setCurrentView] = useState<AppView>('todos');
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-500">Loading...</div>
+      <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${
+        isDark ? 'bg-gray-900' : 'bg-gray-50'
+      }`}>
+        <div className={`transition-colors duration-300 ${
+          isDark ? 'text-gray-400' : 'text-gray-500'
+        }`}>
+          Loading...
+        </div>
       </div>
     );
   }
@@ -24,25 +33,41 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 relative z-0 pb-16 sm:pb-0">
-      <header className="bg-white shadow-sm border-b border-gray-200 relative z-0">
+    <div className={`min-h-screen relative z-0 pb-16 sm:pb-0 transition-colors duration-300 ${
+      isDark ? 'bg-gray-900' : 'bg-gray-50'
+    }`}>
+      <header className={`shadow-sm border-b relative z-0 transition-colors duration-300 ${
+        isDark 
+          ? 'bg-gray-800 border-gray-700' 
+          : 'bg-white border-gray-200'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-4 gap-4">
-            <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-gray-900">
-                {currentView === 'todos' ? 'TODO List' : 'Checklists'}
-              </h1>
+            {/* Logo and Theme Toggle */}
+            <div className="flex items-center justify-between">
+              <CheckItLogo size="md" showText={true} />
+              <div className="sm:hidden">
+                <ThemeToggle />
+              </div>
             </div>
             
-            {/* Desktop Navigation tabs */}
+            {/* Desktop Navigation and Controls */}
             <div className="hidden sm:flex items-center gap-4">
-              <nav className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+              <ThemeToggle />
+              
+              <nav className={`flex space-x-1 rounded-lg p-1 transition-colors duration-300 ${
+                isDark ? 'bg-gray-700' : 'bg-gray-100'
+              }`}>
                 <button
                   onClick={() => setCurrentView('todos')}
                   className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                     currentView === 'todos'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? isDark 
+                        ? 'bg-gray-600 text-white shadow-sm' 
+                        : 'bg-white text-gray-900 shadow-sm'
+                      : isDark
+                        ? 'text-gray-300 hover:text-white'
+                        : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
                   Todos
@@ -51,8 +76,12 @@ function App() {
                   onClick={() => setCurrentView('checklists')}
                   className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                     currentView === 'checklists'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? isDark 
+                        ? 'bg-gray-600 text-white shadow-sm' 
+                        : 'bg-white text-gray-900 shadow-sm'
+                      : isDark
+                        ? 'text-gray-300 hover:text-white'
+                        : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
                   Checklists
@@ -61,7 +90,11 @@ function App() {
               
               <button
                 onClick={signOut}
-                className="text-gray-500 hover:text-gray-700 text-sm"
+                className={`text-sm transition-colors duration-300 ${
+                  isDark 
+                    ? 'text-gray-400 hover:text-gray-200' 
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
               >
                 Sign Out
               </button>
@@ -71,7 +104,11 @@ function App() {
             <div className="sm:hidden">
               <button
                 onClick={signOut}
-                className="text-gray-500 hover:text-gray-700 text-sm"
+                className={`text-sm transition-colors duration-300 ${
+                  isDark 
+                    ? 'text-gray-400 hover:text-gray-200' 
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
               >
                 Sign Out
               </button>
@@ -85,14 +122,22 @@ function App() {
       </main>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 sm:hidden z-50">
+      <nav className={`fixed bottom-0 left-0 right-0 border-t sm:hidden z-50 transition-colors duration-300 ${
+        isDark 
+          ? 'bg-gray-800 border-gray-700' 
+          : 'bg-white border-gray-200'
+      }`}>
         <div className="flex">
           <button
             onClick={() => setCurrentView('todos')}
             className={`flex-1 flex flex-col items-center justify-center py-3 px-4 transition-colors ${
               currentView === 'todos'
-                ? 'text-blue-600 bg-blue-50'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                ? isDark
+                  ? 'text-blue-400 bg-blue-900/20'
+                  : 'text-blue-600 bg-blue-50'
+                : isDark
+                  ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
             }`}
           >
             <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,8 +150,12 @@ function App() {
             onClick={() => setCurrentView('checklists')}
             className={`flex-1 flex flex-col items-center justify-center py-3 px-4 transition-colors ${
               currentView === 'checklists'
-                ? 'text-blue-600 bg-blue-50'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                ? isDark
+                  ? 'text-blue-400 bg-blue-900/20'
+                  : 'text-blue-600 bg-blue-50'
+                : isDark
+                  ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
             }`}
           >
             <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

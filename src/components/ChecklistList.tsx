@@ -5,6 +5,7 @@ import { ChecklistItemFormModal } from './ChecklistItemFormModal';
 import { CategoryFilter } from './CategoryFilter';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
 import { useChecklists } from '../hooks/useChecklists';
+import { useTheme } from '../contexts/ThemeContext';
 import { CreateChecklistItemFormData } from '../schemas/checklistSchema';
 
 export function ChecklistList() {
@@ -17,6 +18,7 @@ export function ChecklistList() {
     toggleChecklistItemComplete,
     deleteChecklistItem,
   } = useChecklists();
+  const { isDark } = useTheme();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ChecklistItem | undefined>();
@@ -93,7 +95,9 @@ export function ChecklistList() {
   if (loading && checklistItems.length === 0) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-gray-500">Loading checklist items...</div>
+        <div className={`transition-colors duration-300 ${
+          isDark ? 'text-gray-400' : 'text-gray-500'
+        }`}>Loading checklist items...</div>
       </div>
     );
   }
@@ -101,7 +105,9 @@ export function ChecklistList() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-gray-900">My Checklist</h1>
+        <h1 className={`text-2xl font-bold transition-colors duration-300 ${
+          isDark ? 'text-white' : 'text-gray-900'
+        }`}>My Checklist</h1>
         <button
           onClick={handleCreateItem}
           className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -111,7 +117,11 @@ export function ChecklistList() {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
+        <div className={`border px-4 py-3 rounded-md transition-colors duration-300 ${
+          isDark 
+            ? 'bg-red-900/20 border-red-800 text-red-400'
+            : 'bg-red-50 border-red-200 text-red-600'
+        }`}>
           {error}
         </div>
       )}
@@ -127,7 +137,9 @@ export function ChecklistList() {
 
       {filteredItems.length === 0 ? (
         <div className="text-center py-12">
-          <div className="text-gray-500 mb-4">
+          <div className={`mb-4 transition-colors duration-300 ${
+            isDark ? 'text-gray-400' : 'text-gray-500'
+          }`}>
             {selectedCategory === 'all' ? 'No checklist items yet' : `No ${selectedCategory} items`}
           </div>
           <button
@@ -169,8 +181,12 @@ export function ChecklistList() {
 
                 {/* Separator if both incomplete and completed items exist */}
                 {incompleteItems.length > 0 && completedItems.length > 0 && (
-                  <div className="border-t border-gray-200 my-6 pt-4">
-                    <span className="text-sm text-gray-500 font-medium">Completed Items</span>
+                  <div className={`border-t my-6 pt-4 transition-colors duration-300 ${
+                    isDark ? 'border-gray-700' : 'border-gray-200'
+                  }`}>
+                    <span className={`text-sm font-medium transition-colors duration-300 ${
+                      isDark ? 'text-gray-400' : 'text-gray-500'
+                    }`}>Completed Items</span>
                   </div>
                 )}
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { ChecklistItem } from '../types/checklist';
 import { CreateChecklistItemFormData, CreateChecklistItemSchema } from '../schemas/checklistSchema';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface ChecklistItemFormModalProps {
   isOpen: boolean;
@@ -13,6 +14,7 @@ interface ChecklistItemFormModalProps {
 }
 
 export function ChecklistItemFormModal({ isOpen, onClose, onSubmit, item, title, existingCategories }: ChecklistItemFormModalProps) {
+  const { isDark } = useTheme();
   const [formData, setFormData] = useState<CreateChecklistItemFormData>({
     title: '',
     quantity: '',
@@ -121,13 +123,19 @@ export function ChecklistItemFormModal({ isOpen, onClose, onSubmit, item, title,
 
   return createPortal(
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <div className={`rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto transition-colors duration-300 ${
+        isDark ? 'bg-gray-800' : 'bg-white'
+      }`}>
         <div className="p-4 sm:p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">{title}</h2>
+            <h2 className={`text-lg sm:text-xl font-semibold transition-colors duration-300 ${
+              isDark ? 'text-white' : 'text-gray-900'
+            }`}>{title}</h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 p-1"
+              className={`p-1 transition-colors duration-300 ${
+                isDark ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'
+              }`}
               disabled={isSubmitting}
             >
               <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -138,7 +146,9 @@ export function ChecklistItemFormModal({ isOpen, onClose, onSubmit, item, title,
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="title" className={`block text-sm font-medium mb-1 transition-colors duration-300 ${
+                isDark ? 'text-gray-300' : 'text-gray-700'
+              }`}>
                 Item Name *
               </label>
               <input
@@ -147,17 +157,25 @@ export function ChecklistItemFormModal({ isOpen, onClose, onSubmit, item, title,
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                  errors.title ? 'border-red-300' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300 ${
+                  errors.title 
+                    ? 'border-red-500' 
+                    : isDark 
+                      ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400'
+                      : 'border-gray-300 bg-white text-gray-900'
                 }`}
                 placeholder="Enter item name"
                 disabled={isSubmitting}
               />
-              {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
+              {errors.title && <p className={`mt-1 text-sm transition-colors duration-300 ${
+                isDark ? 'text-red-400' : 'text-red-600'
+              }`}>{errors.title}</p>}
             </div>
 
             <div>
-              <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="quantity" className={`block text-sm font-medium mb-1 transition-colors duration-300 ${
+                isDark ? 'text-gray-300' : 'text-gray-700'
+              }`}>
                 Quantity
               </label>
               <input
@@ -166,14 +184,20 @@ export function ChecklistItemFormModal({ isOpen, onClose, onSubmit, item, title,
                 name="quantity"
                 value={formData.quantity}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300 ${
+                  isDark 
+                    ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400'
+                    : 'border-gray-300 bg-white text-gray-900'
+                }`}
                 placeholder="e.g., 1 kg, 3 bottles, 2 pieces"
                 disabled={isSubmitting}
               />
             </div>
 
             <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="category" className={`block text-sm font-medium mb-1 transition-colors duration-300 ${
+                isDark ? 'text-gray-300' : 'text-gray-700'
+              }`}>
                 Category
               </label>
               <select
@@ -181,7 +205,11 @@ export function ChecklistItemFormModal({ isOpen, onClose, onSubmit, item, title,
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300 ${
+                  isDark 
+                    ? 'border-gray-600 bg-gray-700 text-white' 
+                    : 'border-gray-300 bg-white text-gray-900'
+                }`}
                 disabled={isSubmitting}
               >
                 {existingCategories.map((category) => (
@@ -197,7 +225,11 @@ export function ChecklistItemFormModal({ isOpen, onClose, onSubmit, item, title,
                   type="text"
                   value={customCategory}
                   onChange={handleCustomCategoryChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2"
+                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2 transition-colors duration-300 ${
+                    isDark 
+                      ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400'
+                      : 'border-gray-300 bg-white text-gray-900'
+                  }`}
                   placeholder="Enter new category name"
                   disabled={isSubmitting}
                 />
@@ -205,7 +237,9 @@ export function ChecklistItemFormModal({ isOpen, onClose, onSubmit, item, title,
             </div>
 
             <div>
-              <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="notes" className={`block text-sm font-medium mb-1 transition-colors duration-300 ${
+                isDark ? 'text-gray-300' : 'text-gray-700'
+              }`}>
                 Notes
               </label>
               <textarea
@@ -214,7 +248,11 @@ export function ChecklistItemFormModal({ isOpen, onClose, onSubmit, item, title,
                 value={formData.notes}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300 ${
+                  isDark 
+                    ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400'
+                    : 'border-gray-300 bg-white text-gray-900'
+                }`}
                 placeholder="Additional notes (optional)"
                 disabled={isSubmitting}
               />
@@ -224,7 +262,11 @@ export function ChecklistItemFormModal({ isOpen, onClose, onSubmit, item, title,
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full sm:w-auto px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors disabled:opacity-50"
+                className={`w-full sm:w-auto px-4 py-2 rounded-md transition-colors disabled:opacity-50 ${
+                  isDark 
+                    ? 'text-gray-300 bg-gray-700 hover:bg-gray-600' 
+                    : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+                }`}
                 disabled={isSubmitting}
               >
                 Cancel
